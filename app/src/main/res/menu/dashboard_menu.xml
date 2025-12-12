@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_test_notification"
+        android:title="🎉 Test Notification"
+        android:iconTint="@color/pink_dark"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_logout"
+        android:title="Logout"
+        android:iconTint="@color/pink_dark"
+        app:showAsAction="never" />
+</menu>

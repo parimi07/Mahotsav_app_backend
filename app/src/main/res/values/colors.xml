@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mahotsav Pink Theme -->
+    <color name="primary">#FF1493</color>
+    <color name="primary_dark">#C71585</color>
+    <color name="accent">#FFD700</color>
+    <color name="background">#FFE4E1</color>
+    
+    <!-- Pink Gradient Colors -->
+    <color name="pink_light">#FFC0CB</color>
+    <color name="pink_medium">#FF69B4</color>
+    <color name="pink_dark">#FF1493</color>
+    <color name="pink_deep">#C71585</color>
+    
+    <!-- Gold Colors -->
+    <color name="gold">#FFD700</color>
+    <color name="gold_dark">#DAA520</color>
+    <color name="gold_light">#FFF8DC</color>
+    
+    <!-- White/Off-White -->
+    <color name="white">#FFFFFF</color>
+    <color name="off_white">#FFF5EE</color>
+    <color name="cream">#FFFACD</color>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Registration Admin</string>
+    <string name="sound_file">sound_1000_wala</string>
+    <string name="widget_description">Display total money collected</string>
+</resources>
