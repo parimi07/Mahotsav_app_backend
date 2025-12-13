@@ -256,11 +256,32 @@ io.on('connection', (socket) => {
     });
   });
   
+  // Handle user status changes (joined/left)
+  socket.on('user-status', (status) => {
+    if (status === 'joined') {
+      socket.to(WALKIE_TALKIE_ROOM).emit('user-joined', {
+        userId: socket.id,
+        timestamp: new Date().toISOString()
+      });
+      console.log(`✅ User ${socket.id} joined walkie-talkie`);
+    } else if (status === 'left') {
+      socket.to(WALKIE_TALKIE_ROOM).emit('user-left', {
+        userId: socket.id,
+        timestamp: new Date().toISOString()
+      });
+      console.log(`❌ User ${socket.id} left walkie-talkie`);
+    }
+  });
+  
   // Handle disconnection
   socket.on('disconnect', () => {
     console.log(`📴 User disconnected: ${socket.id}`);
     activeUsers.delete(socket.id);
     io.to(WALKIE_TALKIE_ROOM).emit('active-users', activeUsers.size);
+    io.to(WALKIE_TALKIE_ROOM).emit('user-left', {
+      userId: socket.id,
+      timestamp: new Date().toISOString()
+    });
   });
 });
 
