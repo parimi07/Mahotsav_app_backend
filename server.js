@@ -4,8 +4,18 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');
+const http = require('http');
+const { Server } = require('socket.io');
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 
 // Middleware
@@ -215,9 +225,49 @@ process.on('uncaughtException', (error) => {
   // Don't exit on uncaught exception
 });
 
+// Walkie-Talkie WebSocket Handler
+const WALKIE_TALKIE_ROOM = 'mahotsav-frequency'; // Single shared frequency
+let activeUsers = new Set();
+
+io.on('connection', (socket) => {
+  console.log(`📡 User connected: ${socket.id}`);
+  
+  // Join the shared frequency room
+  socket.join(WALKIE_TALKIE_ROOM);
+  activeUsers.add(socket.id);
+  
+  // Broadcast active users count
+  io.to(WALKIE_TALKIE_ROOM).emit('active-users', activeUsers.size);
+  
+  // Handle audio streaming
+  socket.on('audio-stream', (audioData) => {
+    // Broadcast audio to all users in the room except sender
+    socket.to(WALKIE_TALKIE_ROOM).emit('audio-data', {
+      userId: socket.id,
+      audio: audioData
+    });
+  });
+  
+  // Handle user speaking status
+  socket.on('speaking', (isSpeaking) => {
+    socket.to(WALKIE_TALKIE_ROOM).emit('user-speaking', {
+      userId: socket.id,
+      speaking: isSpeaking
+    });
+  });
+  
+  // Handle disconnection
+  socket.on('disconnect', () => {
+    console.log(`📴 User disconnected: ${socket.id}`);
+    activeUsers.delete(socket.id);
+    io.to(WALKIE_TALKIE_ROOM).emit('active-users', activeUsers.size);
+  });
+});
+
 // Start server
-const server = app.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`📡 Walkie-Talkie frequency: ${WALKIE_TALKIE_ROOM}`);
   console.log(`📊 MongoDB Status: ${mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'}`);
   // Don't wait for MongoDB - initialize admin in background
   setTimeout(() => initializeAdmin(), 1000);
