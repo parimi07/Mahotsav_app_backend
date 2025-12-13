@@ -54,7 +54,7 @@ public class DashboardActivity extends AppCompatActivity {
     private com.airbnb.lottie.LottieAnimationView celebrationAnimation;
     private TextView celebrationText;
     
-    private static final String API_BASE_URL = "http://10.10.214.62:3000/api";
+    private static final String API_BASE_URL = "https://mahotsav-app-backend.onrender.com/api";
     private static final int NOTIFICATION_PERMISSION_CODE = 1001;
     private String authToken;
 
@@ -198,8 +198,8 @@ public class DashboardActivity extends AppCompatActivity {
                     // Update widget with total money
                     MoneyWidgetProvider.updateWidgetMoney(DashboardActivity.this, totalMoney);
                     
-                    // Check for milestone notifications
-                    MilestoneNotificationManager.checkAndNotifyMilestone(DashboardActivity.this, totalReg);
+                    // Check for milestone notifications (based on money milestones)
+                    MilestoneNotificationManager.checkAndNotifyMilestone(DashboardActivity.this, totalMoney);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

@@ -20,32 +20,28 @@ public class MilestoneNotificationManager {
     private static final String PREFS_NAME = "milestone_prefs";
     private static final String LAST_MILESTONE_KEY = "last_milestone";
     
-    public static void checkAndNotifyMilestone(Context context, int totalRegistrations) {
+    public static void checkAndNotifyMilestone(Context context, int totalMoney) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        int lastCount = prefs.getInt(LAST_MILESTONE_KEY, 0);
+        int lastMilestone = prefs.getInt(LAST_MILESTONE_KEY, 0);
         
-        // TESTING MODE: Notify on EVERY registration increment
-        if (totalRegistrations > lastCount) {
-            // Registration count increased!
-            // Show animation on dashboard if it's DashboardActivity
+        // PRODUCTION MODE: Notify on ₹100k money milestones (1 lakh, 2 lakh, 3 lakh, etc.)
+        int currentMilestone = (totalMoney / 100000) * 100000;
+        if (currentMilestone > 0 && currentMilestone > lastMilestone && totalMoney >= currentMilestone) {
+            // Hit a new ₹100k money milestone!
             if (context instanceof DashboardActivity) {
-                ((DashboardActivity) context).showCelebrationAnimation(totalRegistrations);
+                ((DashboardActivity) context).showCelebrationAnimation(currentMilestone);
             }
-            sendNotificationOnly(context, totalRegistrations);
-            
-            // Save this count
-            prefs.edit().putInt(LAST_MILESTONE_KEY, totalRegistrations).apply();
+            sendNotificationOnly(context, currentMilestone);
+            prefs.edit().putInt(LAST_MILESTONE_KEY, currentMilestone).apply();
         }
         
-        // PRODUCTION MODE (comment out above, uncomment below):
-        // Check if we've hit a new lakh (100,000 milestone)
-        // int currentMilestone = (totalRegistrations / 100000) * 100000;
-        // if (currentMilestone > 0 && currentMilestone > lastMilestone && totalRegistrations >= currentMilestone) {
+        // TESTING MODE (disabled for production):
+        // if (totalMoney > lastMoney) {
         //     if (context instanceof DashboardActivity) {
-        //         ((DashboardActivity) context).showCelebrationAnimation(currentMilestone);
+        //         ((DashboardActivity) context).showCelebrationAnimation(totalMoney);
         //     }
-        //     sendNotificationOnly(context, currentMilestone);
-        //     prefs.edit().putInt(LAST_MILESTONE_KEY, currentMilestone).apply();
+        //     sendNotificationOnly(context, totalMoney);
+        //     prefs.edit().putInt(LAST_MILESTONE_KEY, totalMoney).apply();
         // }
     }
     

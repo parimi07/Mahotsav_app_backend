@@ -33,7 +33,7 @@ public class ListActivity extends AppCompatActivity {
     private List<Registration> allRegistrations = new ArrayList<>();
     private RequestQueue requestQueue;
     
-    private static final String API_BASE_URL = "http://10.10.214.62:3000/api";
+    private static final String API_BASE_URL = "https://mahotsav-app-backend.onrender.com/api";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

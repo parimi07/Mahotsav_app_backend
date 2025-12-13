@@ -34,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     
     // Update this with your computer's IP address when testing on physical device
     // For emulator use: http://10.0.2.2:3000
-    private static final String API_BASE_URL = "http://10.10.214.62:3000/api";
+    private static final String API_BASE_URL = "https://mahotsav-app-backend.onrender.com/api";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

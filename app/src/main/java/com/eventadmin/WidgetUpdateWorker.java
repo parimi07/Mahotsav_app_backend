@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class WidgetUpdateWorker extends Worker {
 
     private static final String TAG = "WidgetUpdateWorker";
-    private static final String API_BASE_URL = "http://10.10.214.62:3000/api";
+    private static final String API_BASE_URL = "https://mahotsav-app-backend.onrender.com/api";
 
     public WidgetUpdateWorker(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
