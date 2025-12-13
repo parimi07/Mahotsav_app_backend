@@ -12,8 +12,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// MongoDB Connection with better options
-mongoose.connect(process.env.MONGODB_URI, {
+// MongoDB Connection with better options - Using 'test' database
+const mongoUri = process.env.MONGODB_URI.replace('/eventadmin', '/test');
+mongoose.connect(mongoUri, {
   serverSelectionTimeoutMS: 30000,
   socketTimeoutMS: 45000,
   family: 4, // Force IPv4
@@ -127,9 +128,12 @@ app.get('/api/stats', async (req, res) => {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     
     const totalRegistrations = await Registration.countDocuments();
-    const totalMoney = await Registration.aggregate([
-      { $group: { _id: null, total: { $sum: '$amount' } } }
-    ]);
+    
+    // Calculate money from coordinators collection (sum of all totalAmountCollected)
+    const coordinatorsCollection = mongoose.connection.collection('coordinators');
+    const totalMoney = await coordinatorsCollection.aggregate([
+      { $group: { _id: null, total: { $sum: '$totalAmountCollected' } } }
+    ]).toArray();
     
     const todayRegistrations = await Registration.countDocuments({
       createdAt: { $gte: startOfDay }
@@ -182,9 +186,12 @@ app.get('/api/registrations', async (req, res) => {
 
 app.get('/api/widget/money', async (req, res) => {
   try {
-    const totalMoney = await Registration.aggregate([
-      { $group: { _id: null, total: { $sum: '$amount' } } }
-    ]);
+    // Calculate money only from PAID users
+    // Calculate money from coordinators collection (sum of all totalAmountCollected)
+    const coordinatorsCollection = mongoose.connection.collection('coordinators');
+    const totalMoney = await coordinatorsCollection.aggregate([
+      { $group: { _id: null, total: { $sum: '$totalAmountCollected' } } }
+    ]).toArray();
     
     res.json({ totalMoney: totalMoney[0]?.total || 0 });
   } catch (error) {
