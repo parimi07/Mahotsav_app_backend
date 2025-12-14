@@ -23,16 +23,28 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Initialize Firebase Admin (only if service account file exists)
+// Initialize Firebase Admin (production-ready)
 try {
-  const serviceAccount = require('./firebase-service-account.json');
+  let serviceAccount;
+  
+  // Check for environment variable first (production on Render)
+  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    console.log('🔐 Using Firebase credentials from environment variable');
+  } else {
+    // Fallback to local file (development)
+    serviceAccount = require('./firebase-service-account.json');
+    console.log('📁 Using Firebase credentials from local file');
+  }
+  
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
   });
-  console.log('✅ Firebase Admin initialized');
+  console.log('✅ Firebase Admin initialized successfully');
 } catch (error) {
-  console.log('⚠️ Firebase service account not found. Push notifications disabled.');
-  console.log('   To enable: Download firebase-service-account.json from Firebase Console');
+  console.log('⚠️ Firebase initialization failed. Push notifications disabled.');
+  console.log('   Production: Set FIREBASE_SERVICE_ACCOUNT environment variable on Render');
+  console.log('   Development: Place firebase-service-account.json in backend folder');
 }
 
 // MongoDB Connection with better options
