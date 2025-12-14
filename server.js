@@ -308,24 +308,44 @@ app.post('/api/login', async (req, res) => {
 app.post('/api/chat-login', async (req, res) => {
   try {
     const { userId, password } = req.body;
+    
+    if (!userId || !password) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'User ID and password are required' 
+      });
+    }
+    
     const user = await ChatUser.findOne({ userId });
     
     if (!user) {
-      return res.status(401).json({ error: 'Invalid user ID' });
+      return res.status(401).json({ 
+        success: false,
+        error: 'Invalid user ID' 
+      });
     }
     
     if (user.password !== password) {
-      return res.status(401).json({ error: 'Invalid password' });
+      return res.status(401).json({ 
+        success: false,
+        error: 'Invalid password' 
+      });
     }
     
+    // Return both 'name' and 'userName' for compatibility
     res.json({ 
       success: true,
       userId: user.userId,
+      userName: user.name,
       name: user.name,
-      phone: user.phone
+      phone: user.phone || ''
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Login error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: error.message 
+    });
   }
 });
 
