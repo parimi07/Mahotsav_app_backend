@@ -429,6 +429,15 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
+app.get('/api/registrations', async (req, res) => {
+  try {
+    const registrations = await Registration.find().sort({ createdAt: -1 });
+    res.json({ registrations });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.get('/api/widget/money', async (req, res) => {
   try {
     const totalMoney = await Registration.aggregate([
@@ -436,6 +445,19 @@ app.get('/api/widget/money', async (req, res) => {
     ]);
     
     res.json({ totalMoney: totalMoney[0]?.total || 0 });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/registrations', authMiddleware, async (req, res) => {
+  try {
+    const registrations = await Registration.find()
+      .sort({ createdAt: -1 })
+      .select('userId name email phone college amount createdAt')
+      .lean();
+    
+    res.json({ registrations });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
