@@ -349,7 +349,7 @@ app.post('/api/chat-login', async (req, res) => {
   }
 });
 
-app.get('/api/stats', authMiddleware, async (req, res) => {
+app.get('/api/stats', async (req, res) => {
   try {
     const totalRegistrations = await Registration.countDocuments();
     const totalMoney = await Registration.aggregate([
@@ -367,11 +367,18 @@ app.get('/api/stats', authMiddleware, async (req, res) => {
       { $group: { _id: null, total: { $sum: '$amount' } } }
     ]);
     
+    // Calculate month registrations (current month)
+    const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const monthRegistrations = await Registration.countDocuments({
+      createdAt: { $gte: startOfMonth }
+    });
+    
     res.json({
       totalRegistrations,
       totalMoney: totalMoney[0]?.total || 0,
       todayRegistrations,
-      todayMoney: todayMoney[0]?.total || 0
+      todayMoney: todayMoney[0]?.total || 0,
+      monthRegistrations
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
