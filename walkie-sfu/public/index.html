@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Mahotsav Walkie-Talkie (Demo)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Mahotsav Walkie-Talkie</h1>
+    <div id="status">Status: <span id="channelStatus">IDLE</span></div>
+    <div id="active">Active Users: <span id="activeUsers">0</span></div>
+
+    <button id="ptt" class="ptt">Hold to Talk</button>
+    <div id="log"></div>
+  </div>
+
+  <script src="https://unpkg.com/mediasoup-client@3.6.31/lib/index.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>

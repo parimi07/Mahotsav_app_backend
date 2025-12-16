@@ -1,0 +1,5 @@
+body { font-family: Arial, sans-serif; background: linear-gradient(180deg,#ff9eb3,#ffc0e6); color:#222; }
+.container { max-width:480px; margin:40px auto; padding:20px; background:rgba(255,255,255,0.9); border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,0.1); text-align:center }
+.ptt { width:240px; height:240px; border-radius:120px; background:#ff2d8f; color:white; font-size:32px; border:none; box-shadow:0 8px 20px rgba(0,0,0,0.2); }
+#status,#active{margin:12px 0; font-weight:bold}
+#log{margin-top:16px; text-align:left; max-height:200px; overflow:auto; background:#fff; padding:10px; border-radius:8px;}
