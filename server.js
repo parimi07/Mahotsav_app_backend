@@ -385,6 +385,76 @@ app.get('/api/stats', async (req, res) => {
   }
 });
 
+// College Statistics API - Counts registrations per college
+app.get('/api/college-stats', async (req, res) => {
+  try {
+    console.log('📊 Fetching college statistics...');
+    
+    // First check total registrations
+    const totalCount = await Registration.countDocuments();
+    console.log(`Total registrations in DB: ${totalCount}`);
+    
+    // Aggregate college counts from registrations
+    const collegeStats = await Registration.aggregate([
+      {
+        // Match only records with valid college field
+        $match: {
+          college: { $exists: true, $ne: null, $ne: '', $ne: 'null' }
+        }
+      },
+      {
+        // Group by college name and count
+        $group: {
+          _id: '$college',
+          count: { $sum: 1 }
+        }
+      },
+      {
+        // Sort by count descending (highest first)
+        $sort: { count: -1 }
+      }
+    ]);
+    
+    console.log(`Found ${collegeStats.length} colleges with participants`);
+    
+    // Convert to array format for easier mobile parsing
+    const collegeList = collegeStats.map(stat => ({
+      collegeName: stat._id,
+      count: stat.count
+    }));
+    
+    // Also create object format
+    const colleges = {};
+    collegeStats.forEach(stat => {
+      colleges[stat._id] = stat.count;
+    });
+    
+    // Log top 5 colleges
+    console.log('Top 5 colleges:');
+    collegeList.slice(0, 5).forEach((c, i) => {
+      console.log(`  ${i + 1}. ${c.collegeName}: ${c.count} students`);
+    });
+    
+    res.json({
+      success: true,
+      colleges,
+      collegeList,
+      totalColleges: collegeStats.length,
+      totalRegistrations: totalCount,
+      timestamp: new Date()
+    });
+  } catch (error) {
+    console.error('❌ Error fetching college stats:', error);
+    res.status(500).json({ 
+      success: false,
+      error: error.message,
+      colleges: {},
+      collegeList: [],
+      totalColleges: 0
+    });
+  }
+});
+
 app.get('/api/current-series', async (req, res) => {
   try {
     const lastRegistration = await Registration.findOne().sort({ createdAt: -1 });
