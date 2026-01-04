@@ -358,14 +358,6 @@ app.get('/api/stats', async (req, res) => {
     const todayRegistrations = await Registration.countDocuments({
       createdAt: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) }
     });
-    const todayMoney = await Registration.aggregate([
-      {
-        $match: {
-          createdAt: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) }
-        }
-      },
-      { $group: { _id: null, total: { $sum: '$amount' } } }
-    ]);
     
     // Calculate month registrations (current month)
     const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
@@ -377,7 +369,6 @@ app.get('/api/stats', async (req, res) => {
       totalRegistrations,
       totalMoney: totalMoney[0]?.total || 0,
       todayRegistrations,
-      todayMoney: todayMoney[0]?.total || 0,
       monthRegistrations
     });
   } catch (error) {
