@@ -365,11 +365,33 @@ app.get('/api/stats', async (req, res) => {
       createdAt: { $gte: startOfMonth }
     });
     
+    // Count male and female registrations
+    const maleCount = await Registration.countDocuments({ 
+      gender: { $in: ['Male', 'male', 'MALE', 'M'] }
+    });
+    const femaleCount = await Registration.countDocuments({ 
+      gender: { $in: ['Female', 'female', 'FEMALE', 'F'] }
+    });
+    
+    // Calculate hourly registration rate (registrations per hour since start)
+    const firstRegistration = await Registration.findOne().sort({ createdAt: 1 });
+    let hourlyRate = 0;
+    
+    if (firstRegistration) {
+      const startTime = new Date(firstRegistration.createdAt);
+      const now = new Date();
+      const hoursPassed = Math.max(1, (now - startTime) / (1000 * 60 * 60)); // Avoid division by zero
+      hourlyRate = Math.round((totalRegistrations / hoursPassed) * 10) / 10; // Round to 1 decimal
+    }
+    
     res.json({
       totalRegistrations,
       totalMoney: totalMoney[0]?.total || 0,
       todayRegistrations,
-      monthRegistrations
+      monthRegistrations,
+      maleCount,
+      femaleCount,
+      hourlyRate
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
